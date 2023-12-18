@@ -123,26 +123,33 @@ class HBNBCommand(cmd.Cmd):
         """Usage: create <class> <key 1>=<value 2> <key 2>=<value 2> ...
         Create a new class instance with given keys/values and print its id.
         """
-        my_list = shlex.split(args)
-        if not my_list:
+        if not args:
             print("** class name missing **")
             return
-        if my_list[0] not in HBNBCommand.my_models:
-            print("** class doesn't exist **")
-            return
+        try:
+            command_args = args.split(" ")
 
-        kwargs = {}
-        for i in range(1, len(my_list)):
-            key, value = tuple(my_list[i].split("="))
-            kwargs[key] = value
-        
-        if kwargs == {}:
-            obj = eval(my_list[0])()
-        else:
-            obj = eval(my_list[0])(**kwargs)
-            storage.new(obj)
-        print(obj.id)
-        obj.save()
+            kwargs = {}
+            for i in range(1, len(command_args)):
+                key, value = tuple(command_args[i].split("="))
+                if value[0] == '"':
+                    value = value.strip('"').replace("_", " ")
+                else:
+                    try:
+                        value = eval(value)
+                    except (SyntaxError, NameError):
+                        continue
+                kwargs[key] = value
+
+            if kwargs == {}:
+                obj = eval(command_args[0])()
+            else:
+                obj = eval(command_args[0])(**kwargs)
+                storage.new(obj)
+            print(obj.id)
+            obj.save()
+        except NameError:
+            print("** class doesn't exist **")
 
     def do_update(self, args):
         """ Update an instance based on the class name.
