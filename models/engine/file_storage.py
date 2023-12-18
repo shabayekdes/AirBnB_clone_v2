@@ -24,9 +24,17 @@ class FileStorage:
         self.__file_path = "file.json"
         self.__objects = {}
 
-    def all(self):
+    def all(self, cls=None):
         """ Return the dictionary of stored objects.
         """
+        if cls is not None:
+            if type(cls) == str:
+                cls = eval(cls)
+            filtered_objects = {}
+            for key, value in self.__objects.items():
+                if type(value) == cls:
+                    filtered_objects[key] = value
+            return filtered_objects
         return self.__objects
 
     def new(self, obj):
@@ -44,6 +52,13 @@ class FileStorage:
                 key = object.__class__.__name__ + "." + object.id
                 dictionary[key] = object.to_dict()
             json.dump(dictionary, f)
+
+    def delete(self, obj=None):
+        """Delete a given object from __objects, if it exists."""
+        try:
+            del self.__objects["{}.{}".format(type(obj).__name__, obj.id)]
+        except (AttributeError, KeyError):
+            pass
 
     def reload(self):
         """ Load objects from a JSON file into the storage dictionary.
