@@ -120,19 +120,29 @@ class HBNBCommand(cmd.Cmd):
             print("{}".format(my_data[new_object]))
 
     def do_create(self, args):
-        """ Create a new instance of a specified class.
+        """Usage: create <class> <key 1>=<value 2> <key 2>=<value 2> ...
+        Create a new class instance with given keys/values and print its id.
         """
-        args = shlex.split(args)
-        if not args:
+        my_list = shlex.split(args)
+        if not my_list:
             print("** class name missing **")
             return
-        if args[0] not in HBNBCommand.my_models:
+        if my_list[0] not in HBNBCommand.my_models:
             print("** class doesn't exist **")
             return
+
+        kwargs = {}
+        for i in range(1, len(my_list)):
+            key, value = tuple(my_list[i].split("="))
+            kwargs[key] = value
+        
+        if kwargs == {}:
+            obj = eval(my_list[0])()
         else:
-            new_object = eval(args[0])()
-            new_object.save()
-            print(new_object.id)
+            obj = eval(my_list[0])(**kwargs)
+            storage.new(obj)
+        print(obj.id)
+        obj.save()
 
     def do_update(self, args):
         """ Update an instance based on the class name.
