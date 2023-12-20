@@ -8,6 +8,7 @@ from sqlalchemy import Column, String, DATETIME
 
 Base = declarative_base()
 
+
 class BaseModel:
     """Represents the BaseModel of the HBnB project."""
 
@@ -21,7 +22,7 @@ class BaseModel:
     updated_at = Column(DATETIME,
                         nullable=False,
                         default=datetime.utcnow())
-    
+
     def __init__(self, *args, **kwargs):
         """
         Initializes a new instance of the BaseModel class.

@@ -28,11 +28,11 @@ class FileStorage:
         """ Return the dictionary of stored objects.
         """
         if cls is not None:
-            if type(cls) == str:
+            if isinstance(cls, str):
                 cls = eval(cls)
             filtered_objects = {}
             for key, value in self.__objects.items():
-                if type(value) == cls:
+                if isinstance(value, cls):
                     filtered_objects[key] = value
             return filtered_objects
         return self.__objects
