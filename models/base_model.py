@@ -3,11 +3,25 @@
 from datetime import datetime
 from uuid import uuid4
 import models
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, DATETIME
 
+Base = declarative_base()
 
 class BaseModel:
     """Represents the BaseModel of the HBnB project."""
 
+    id = Column(String(60),
+                nullable=False,
+                primary_key=True,
+                unique=True)
+    created_at = Column(DATETIME,
+                        nullable=False,
+                        default=datetime.utcnow())
+    updated_at = Column(DATETIME,
+                        nullable=False,
+                        default=datetime.utcnow())
+    
     def __init__(self, *args, **kwargs):
         """
         Initializes a new instance of the BaseModel class.
@@ -20,19 +34,21 @@ class BaseModel:
             *args: Non-keyword variable-length argument list.
             **kwargs: Variable-length keyword argument list.
         """
-        self.id = str(uuid4())
-        TimeFormat = "%Y-%m-%dT%H:%M:%S.%f"
-        self.updated_at = datetime.today()
-        self.created_at = datetime.today()
-
         if len(kwargs) != 0:
-            for Key, Value in kwargs.items():
-                if Key == "created_at" or Key == "updated_at":
-                    self.__dict__[Key] = datetime.strptime(Value, TimeFormat)
-                else:
-                    self.__dict__[Key] = Value
+            for key, value in kwargs.items():
+                if key == "created_at" or key == "updated_at":
+                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                if key != "__class__":
+                    setattr(self, key, value)
+            if "id" not in kwargs:
+                self.id = str(uuid4())
+            if "created_at" not in kwargs:
+                self.created_at = datetime.now()
+            if "updated_at" not in kwargs:
+                self.updated_at = datetime.now()
         else:
-            models.storage.new(self)
+            self.id = str(uuid4())
+            self.created_at = self.updated_at = datetime.now()
 
     def save(self):
         """
@@ -40,7 +56,12 @@ class BaseModel:
         then saves the changes to the storage.
         """
         self.updated_at = datetime.today()
+        models.storage.new(self)
         models.storage.save()
+
+    def delete(self):
+        '''deletes the current instance from the storage'''
+        models.storage.delete(self)
 
     def to_dict(self):
         """
