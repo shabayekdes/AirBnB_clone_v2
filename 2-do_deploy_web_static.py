@@ -4,8 +4,6 @@ Distribute archive to web servers
 """
 from fabric.api import put, run, env
 import os
-
-
 env.hosts = ['100.26.210.229', '54.210.107.66']
 
 
@@ -20,13 +18,14 @@ def do_deploy(archive_path):
     deploy_dir = "/data/web_static/releases/{}".format(name)
     try:
         put(archive_path, tem_archive)
-        run("mkdir -p {}".format(deploy_dir))
-        run("tar -xzf {} -C {}".format(tem_archive, deploy_dir))
-        run("rm {}".format(tem_archive))
-        run("mv {}/web_static/* {}/".format(deploy_dir, deploy_dir))
-        run("rm -rf {}/web_static".format(deploy_dir))
-        run("rm -rf /data/web_static/current")
-        run("ln -s {} /data/web_static/current".format(deploy_dir))
+        run("sudo mkdir -p {}".format(deploy_dir))
+        run("sudo tar -xzf {} -C {}".format(tem_archive, deploy_dir))
+        run("sudo rm {}".format(tem_archive))
+        run("sudo mv {}/web_static/* {}/".format(deploy_dir, deploy_dir))
+        run("sudo rm -rf {}/web_static".format(deploy_dir))
+        run("sudo rm -rf /data/web_static/current")
+        run("sudo ln -s {} /data/web_static/current".format(deploy_dir))
         return True
-    except:
+    except Exception as e:
+        print(f"An error occurred: {e}")
         return False
