@@ -52,12 +52,14 @@ button:hover {
 }
 
 .popover {
-    border: 1px solid #DDDDDD;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    padding: 20px 20px 20px 20px;
     display: none;
-    background-color: #FAFAFA;
-    margin: 17px 0 0 0;
+    max-height: 300px;
+    overflow-y: scroll;
+    position: absolute;
+    width: 100%;
 }
 
 .popover ul {
