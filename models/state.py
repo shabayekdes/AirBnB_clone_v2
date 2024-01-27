@@ -4,7 +4,7 @@ from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String
 import models
-import shlex
+from models.city import City
 
 
 class State(BaseModel, Base):
@@ -14,17 +14,13 @@ class State(BaseModel, Base):
     cities = relationship("City", cascade='all, delete, delete-orphan',
                           backref="state")
 
-    @property
-    def cities(self):
-        var = models.storage.all()
-        my_list = []
-        result = []
-        for key in var:
-            city = key.replace('.', ' ')
-            city = shlex.split(city)
-            if (city[0] == 'City'):
-                my_list.append(var[key])
-        for elem in my_list:
-            if (elem.state_id == self.id):
-                result.append(elem)
-        return (result)
+    if models.storage_type != "db":
+        @property
+        def cities(self):
+            """getter for list of city instances related to the state"""
+            city_list = []
+            all_cities = models.storage.all(City)
+            for city in all_cities.values():
+                if city.state_id == self.id:
+                    city_list.append(city)
+            return city_list
