@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """ FileStorage module for handling serialization
 and deserialization of objects to/from JSON.
 """
